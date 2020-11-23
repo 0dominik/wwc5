@@ -1,69 +1,42 @@
 // google maps //
 
 const map = new google.maps.Map(document.querySelector('.map'), {
-	center: {lat: 50.211311, lng: -5.481887},
+  center: { lat: 50.211311, lng: -5.481887 },
   zoom: 16,
-  mapTypeId: 'roadmap'
+  mapTypeId: 'roadmap',
 });
 
 const marker = new google.maps.Marker({
-	position: {lat: 50.211311, lng: -5.481887},
-	map: map
-})
+  position: { lat: 50.211311, lng: -5.481887 },
+  map: map,
+});
 
-//smooth scroll //
+// navbar //
 
-function smoothScroll(anchor, px) {
-	$('html, body').animate({
-		scrollTop: $(anchor).offset().top - px
-	}, 800);
-}
+window.onscroll = () => {
+  const header = document.querySelector('.page-header');
 
-for(let i = 2; i <= 5; i++) {
-	$(`.link-${i}`).click(() => {
-		smoothScroll(`#section-${i}`, 60);
-})}
-
-$(`.page-header__logo, .link-1, .to-top`).click(() => {
-	smoothScroll(`#section-1`, 80);
-})
-
-// navbar // 
-
-$(window).scroll(() => {
-	const header = $('.page-header');
-	const headerHeight = header.height();
-
-	if(pageYOffset > headerHeight) {
-		header.addClass('scrolled');
-	} else {
-		header.removeClass('scrolled');
-	}
-})
+  header.classList.toggle('scrolled', pageYOffset > header.offsetHeight);
+};
 
 // filter gallery //
 
-const work = document.querySelectorAll('.work');
-const categories = $('#all, #web, #print')
+const categories = document.querySelectorAll('.portfolio__categories__choose');
+const works = document.querySelectorAll('.work');
 
-categories.on('click', () => {
-	const all = document.querySelector('#all');
-	const web = document.querySelector('#web');
-	const print = document.querySelector('#print');
+categories.forEach((category) => {
+  category.addEventListener('change', (e) => {
+    const category = e.target.id;
 
-	const webImg = document.querySelectorAll('.web');
-	const printImg = document.querySelectorAll('.print');
-
-	if(all.checked) {
-		work.forEach(element => element.classList.remove('active'))
-	} else if(web.checked) {
-		webImg.forEach(element => element.classList.remove('active'))
-		printImg.forEach(element => element.classList.add('active'))
-	} else if(print.checked) {
-		printImg.forEach(element => element.classList.remove('active'))
-		webImg.forEach(element => element.classList.add('active'))
-	}
-})
+    works.forEach((el) => {
+      if (element.classList.contains(category) || category === 'all') {
+        el.classList.remove('inactive');
+      } else {
+        el.classList.add('inactive');
+      }
+    });
+  });
+});
 
 // modal //
 
@@ -75,87 +48,81 @@ const next = document.querySelector('.modal__next');
 const prev = document.querySelector('.modal__prev');
 let position;
 
-for(let i = 0; i <= 5; i++) {
-	show[i].addEventListener('click', () => {
-		modal.classList.add('active');
-		modalImg.src = img[i].src;
-		position = i;	
-	});
-}
+show.forEach((el, i) =>
+  el.addEventListener('click', () => {
+    modal.classList.add('active');
+    modalImg.src = img[i].src;
+    position = i;
+  }),
+);
 
 next.addEventListener('click', () => {
-	position++
-	if(position >= 6) {
-		position = 0;
-	}	
-	while((work[position].classList.contains('active'))) {
-		console.log(position);
-		position++
-		if(position >= 6) {
-			position = 0;
-		}	
-	}
-	modalImg.src = img[position].src;
-})
+  position++;
+  if (position > 5) {
+    position = 0;
+  }
+  while (works[position].classList.contains('active')) {
+    position++;
+    if (position > 5) {
+      position = 0;
+    }
+  }
+  modalImg.src = img[position].src;
+});
 
 prev.addEventListener('click', () => {
-	position--
-	if(position <= -1) {
-		position = 5;
-	}	
-	while((work[position].classList.contains('active'))) {
-		console.log(position);
-		position--
-		if(position <= -1) {
-			position = 5;
-		}	
-	}
-	modalImg.src = img[position].src;
-})
+  position--;
+  if (position < 0) {
+    position = 5;
+  }
+  while (works[position].classList.contains('active')) {
+    position--;
+    if (position < 0) {
+      position = 5;
+    }
+  }
+  modalImg.src = img[position].src;
+});
 
 modal.addEventListener('click', (e) => {
-	if(e.target != modalImg && e.target != prev && e.target != next) {
-		modal.classList.remove('active');
-	}
-})
+  if (e.target != modalImg && e.target != prev && e.target != next) {
+    modal.classList.remove('active');
+  }
+});
 
 // slider //
 
-const sliderElem = document.querySelector('.slider')
-const dotElems = sliderElem.querySelectorAll('.slider-dots__dot')
+const sliderElem = document.querySelector('.slider');
+const dotElements = sliderElem.querySelectorAll('.slider-dots__dot');
 
-dotElems.forEach(dotElem => {		
-	dotElem.addEventListener('click', () => {
-		dotElems.forEach(dotElem => dotElem.classList.remove('active'));
-		dotElem.classList.add('active');
-		let newPos = dotElem.getAttribute('data-pos');
+dotElements.forEach((dotEl) => {
+  dotEl.addEventListener('click', () => {
+    dotElements.forEach((dotElem) => dotElem.classList.remove('active'));
+    dotEl.classList.add('active');
+    let newPos = dotEl.getAttribute('data-pos');
 
-		sliderElem.setAttribute('data-pos', newPos)	
-	})
-	
-})
+    sliderElem.setAttribute('data-pos', newPos);
+  });
+});
 
-// hamburger // 
+// hamburger //
 
-const hamburger = document.querySelector('.hamburger'); 
-const menu = document.querySelector('.menu__menu-list'); 
+const hamburger = document.querySelector('.hamburger');
+const menu = document.querySelector('.menu__menu-list');
 
-hamburger.addEventListener('click', () => {
-	this.classList.toggle('active');
-	this.getAttribute('aria-expanded') == 'false' ? this.setAttribute('aria-expanded', 'true') : this.setAttribute('aria-expanded', 'false');
-	$('.menu__menu-list').slideToggle();
-})
+const displayMenu = () => {
+  hamburger.classList.toggle('active');
+  menu.classList.toggle('active');
+
+  const ariaValue = hamburger.getAttribute('aria-expanded') === 'false' ? true : false;
+  hamburger.setAttribute('aria-expanded', ariaValue);
+};
+
+hamburger.addEventListener('click', displayMenu);
 
 if (window.matchMedia('(max-device-width: 777px)').matches) {
-	for(let i = 1; i <= 5; i++) {
-		$(`.link-${i}`).click(() => {
-			$('.menu__menu-list').slideToggle();
-			hamburger.classList.remove('active');
-		})}
+  for (let i = 1; i <= 5; i++) {
+    const link = document.querySelector(`.link-${i}`);
+    link.addEventListener('click', displayMenu);
+  }
 }
-
-//
-
-$(document).scroll(() => {
-	$('.work').height($('.work').width()*0.795);
-})
